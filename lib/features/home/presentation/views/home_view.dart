@@ -68,17 +68,28 @@ class _HomeViewState extends State<HomeView> {
       appBar: CustomAppBar(onMenuPressed: toggleMenu),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0.w),
+          padding: EdgeInsets.symmetric(horizontal: 16.0.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                'راكب ايه؟',
-                style: AppTextStyles.font20BlackBold.copyWith(
-                  fontSize: 22.sp,
-                  color: AppColors.dark,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'راكب ايه؟',
+                    style: AppTextStyles.font20BlackBold.copyWith(
+                      fontSize: 24.sp,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                  SizedBox(width: 8.w), // مسافة بسيطة بين النص والصورة
+                  Image.asset(
+                    'lib/core/assets/images/Curious-pana.png',
+                    height: 160.h, // صغّر الحجم عشان يبقى مناسب جنب النص
+                  ),
+                ],
               ),
+
               SizedBox(height: 20.h),
               Expanded(
                 child: ListView.separated(
