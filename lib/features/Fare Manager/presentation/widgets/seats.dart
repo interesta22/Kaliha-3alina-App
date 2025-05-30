@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/data/models/vehicle_Type.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
 
 class Seats extends StatefulWidget {
   final Function(String) onSeatToggle; // الباراميتر الجديد

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/views/vehicle_view.dart';

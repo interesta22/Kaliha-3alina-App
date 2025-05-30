@@ -28,10 +28,13 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  awesome_snackbar_content: ^0.1.6
+  bloc: ^9.0.0
   circular_clip_route: ^0.2.0+3
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_launcher_icons: ^0.14.3
   flutter_localizations:
     sdk: flutter
@@ -39,10 +42,9 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_zoom_drawer: ^3.2.0
   google_fonts: ^6.1.0
-  objectbox: ^4.2.0
-  objectbox_flutter_libs: ^4.2.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
   path_provider: ^2.1.5
-  shrink_sidemenu: ^2.0.0+2-null-safety
   smooth_sheets: ^0.11.5
   tap_to_expand: ^0.7.2
 
@@ -54,7 +56,6 @@ flutter_icons:
 dev_dependencies:
   analyzer: ^7.4.5
   build_runner: ^2.4.15
-  objectbox_generator: ^4.2.0
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

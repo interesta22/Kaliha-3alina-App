@@ -1,9 +1,8 @@
-import 'seats.dart';
 import 'package:flutter/material.dart';
-import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 
 

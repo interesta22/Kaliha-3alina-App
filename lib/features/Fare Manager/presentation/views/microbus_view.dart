@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:khaliha_3alina/shared/ds.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:khaliha_3alina/shared/custom_snackbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khaliha_3alina/shared/custom_tap_to_expand.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/data/models/vehicle_Type.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/rider_model.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/seats.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/riders_table.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/custom_button.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/builld_label_and_field.dart';
 
@@ -17,20 +22,15 @@ class MicrobusView extends StatefulWidget {
 }
 
 class _MicrobusViewState extends State<MicrobusView> {
+  List<RiderModel> riders = [];
   double individualFare = 0.0;
   final farePerPersonController = TextEditingController();
-  final numSeatsController = TextEditingController();
-  final amountPaidController = TextEditingController();
-  final riderController = TextEditingController(text: 'فلان');
   List<int> selectedSeats = [];
   String? selectedSeat;
 
   @override
   void dispose() {
     farePerPersonController.dispose();
-    numSeatsController.dispose();
-    amountPaidController.dispose();
-    riderController.dispose();
     super.dispose();
   }
 
@@ -83,10 +83,12 @@ class _MicrobusViewState extends State<MicrobusView> {
                     ),
                     SizedBox(width: 16),
                     SizedBox(
-                      width: 60.w,
+                      width: 80.w,
                       child: TextField(
                         controller: farePerPersonController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
@@ -102,6 +104,17 @@ class _MicrobusViewState extends State<MicrobusView> {
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(color: Colors.white),
                           ),
+                        ),
+                        inputFormatters: [
+                          DecimalTextInputFormatter(
+                            maxDigitsBeforeDecimal: 3,
+                            maxDigitsAfterDecimal: 2,
+                          ),
+                        ],
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.font20BlackBold.copyWith(
+                          fontSize: 17.sp,
+                          color: AppColors.primary,
                         ),
                         onChanged: (value) {
                           final parsed = double.tryParse(value) ?? 0.0;
@@ -120,12 +133,10 @@ class _MicrobusViewState extends State<MicrobusView> {
                   buttonText: 'ضيف راكب',
                   onPressed: () {
                     if (individualFare == 0.0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'من فضلك ادخل أجرة الفرد قبل إضافة راكب',
-                          ),
-                        ),
+                      Alerts.failureDialog(
+                        context: context,
+                        title: 'خطأ',
+                        message: 'من فضلك ادخل اجرة الفرد',
                       );
                       return;
                     }
@@ -196,7 +207,7 @@ class _MicrobusViewState extends State<MicrobusView> {
                                                 vehicleType:
                                                     VehicleType.microbus,
                                                 isNumber: true,
-                                                isRider: true,
+                                                isDisabled: true,
                                               ),
                                               verticaalSpacing(12),
                                               buildLabelAndFieldByVehicleType(
@@ -206,6 +217,7 @@ class _MicrobusViewState extends State<MicrobusView> {
                                                 vehicleType:
                                                     VehicleType.microbus,
                                                 isRider: true,
+                                                isDisabled: true,
                                               ),
                                               verticaalSpacing(12),
                                               buildLabelAndFieldByVehicleType(
@@ -237,10 +249,49 @@ class _MicrobusViewState extends State<MicrobusView> {
                                         backgroundColor: AppColors.white,
                                         buttonText: 'إضافة',
                                         onPressed: () {
+                                          final name =
+                                              modalRiderController.text.trim();
+                                          final seats =
+                                              int.tryParse(
+                                                modalNumSeatsController.text
+                                                    .trim(),
+                                              ) ??
+                                              0;
+                                          final amount =
+                                              double.tryParse(
+                                                modalAmountPaidController.text
+                                                    .trim(),
+                                              ) ??
+                                              0.0;
+
+                                          if (name.isEmpty ||
+                                              seats == 0 ||
+                                              amount == 0.0) {
+                                            Alerts.failureDialog(
+                                              context: context,
+                                              title: 'خطأ',
+                                              message:
+                                                  'من فضلك املأ كل البيانات',
+                                            );
+                                            return;
+                                          }
+
+                                          setState(() {
+                                            riders.add(
+                                              RiderModel(
+                                                name: name,
+                                                seatsPaidFor: seats,
+                                                amountPaid: amount,
+                                                farePerPerson: individualFare,
+                                              ),
+                                            );
+                                          });
+
                                           Navigator.pop(context);
                                         },
                                       ),
                                     ),
+
                                     verticaalSpacing(16),
                                   ],
                                 ),
@@ -252,6 +303,8 @@ class _MicrobusViewState extends State<MicrobusView> {
                     );
                   },
                 ),
+                verticaalSpacing(15),
+                if (riders.isNotEmpty) ...[RidersTable(riders: riders)],
               ],
             ),
           ),

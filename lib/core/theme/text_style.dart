@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khaliha_3alina/core/theme/font_wieght.dart';
 
 
-class AppTextStyles{
+abstract class AppTextStyles{
   static TextStyle font17WhiteMedium = GoogleFonts.marhey(
     fontSize: 17.sp,
     fontWeight: FontWeightHelper.medium,

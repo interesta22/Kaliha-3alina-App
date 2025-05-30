@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:khaliha_3alina/shared/ds.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/data/models/vehicle_Type.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
 
 Widget buildLabelAndFieldByVehicleType({
   required String label,
   required TextEditingController controller,
   required VehicleType vehicleType,
+  TextEditingController? nameController,
   bool isRider = false,
+  bool isDisabled = true,
+  bool isOther = false,
   bool isNumber = false,
   bool isNumofSeats = false,
   int min = 0,
 }) {
-  int maxAmount = 10000;
-
   List<TextInputFormatter> getInputFormatters() {
     if (isRider) {
-      // أرقام وحروف بحد أقصى 15
       return [LengthLimitingTextInputFormatter(15)];
     }
 
@@ -45,7 +46,6 @@ Widget buildLabelAndFieldByVehicleType({
           final intValue = int.tryParse(newValue.text);
           if (intValue != null) {
             if (intValue > maxSeats) {
-              // نرجع القيمة الجديدة بأقصى عدد مسموح
               return TextEditingValue(
                 text: maxSeats.toString(),
                 selection: TextSelection.collapsed(
@@ -62,21 +62,24 @@ Widget buildLabelAndFieldByVehicleType({
 
     if (isNumber) {
       return [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(5),
-        TextInputFormatter.withFunction((oldValue, newValue) {
-          if (newValue.text.isEmpty) return newValue;
-          final intValue = int.tryParse(newValue.text);
-          if (intValue != null && intValue <= maxAmount) {
-            return newValue;
-          }
-          return oldValue;
-        }),
+        DecimalTextInputFormatter(
+          maxDigitsBeforeDecimal: 5,
+          maxDigitsAfterDecimal: 2,
+        ),
       ];
     }
 
-    // النص العادي
     return [LengthLimitingTextInputFormatter(15)];
+  }
+
+  // ✳️ إعداد القيمة الديفولت على حسب النوع
+  if (isRider && controller.text.isEmpty) {
+    controller.text = 'فلان';
+  } else if (isOther) {
+    controller.text = 'فلان';
+    isDisabled = false; // ✳️ نخليها مقفولة لو مش رايدر
+  } else if (!isRider && controller.text.isEmpty) {
+    isDisabled = false; // ✳️ نخليها مقفولة لو مش رايدر
   }
 
   return Row(
@@ -97,7 +100,7 @@ Widget buildLabelAndFieldByVehicleType({
           height: 60.h,
           child: TextField(
             textAlign: TextAlign.center,
-            enabled: !isRider,
+            enabled: !isDisabled,
             controller: controller,
             keyboardType:
                 isNumber || isNumofSeats
@@ -106,7 +109,7 @@ Widget buildLabelAndFieldByVehicleType({
             inputFormatters: getInputFormatters(),
             style: AppTextStyles.font17BlackRegular.copyWith(
               fontSize: 15.sp,
-              color: isRider ? Colors.grey : AppColors.primary,
+              color: isDisabled ? Colors.grey : AppColors.primary,
             ),
             decoration: InputDecoration(
               filled: true,

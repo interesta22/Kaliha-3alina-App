@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:khaliha_3alina/shared/ds.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:khaliha_3alina/shared/custom_snackbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:khaliha_3alina/shared/custom_tap_to_expand.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/data/models/vehicle_Type.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/rider_model.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/riders_table.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/custom_button.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/builld_label_and_field.dart';
 
@@ -17,24 +22,13 @@ class OtherView extends StatefulWidget {
 
 class _OtherViewState extends State<OtherView> {
   double individualFare = 0.0;
-  TextEditingController farePerPersonController = TextEditingController();
-  TextEditingController passengerNumberController = TextEditingController();
-  TextEditingController amountPaidController = TextEditingController();
-  TextEditingController numSeatsController = TextEditingController();
-  TextEditingController bottomAmountPaidController = TextEditingController();
-  TextEditingController riderController = TextEditingController(text: 'فلان ');
-  TextEditingController riderNameController = TextEditingController();
-  String? selectedSeatInBottomSheet;
+  List<RiderModel> riders = [];
+  final farePerPersonController = TextEditingController();
+  final List<int> selectedSeats = [];
 
   @override
   void dispose() {
     farePerPersonController.dispose();
-    passengerNumberController.dispose();
-    amountPaidController.dispose();
-    numSeatsController.dispose();
-    bottomAmountPaidController.dispose();
-    riderController.dispose();
-    riderNameController.dispose();
     super.dispose();
   }
 
@@ -106,10 +100,24 @@ class _OtherViewState extends State<OtherView> {
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
+                        inputFormatters: [
+                          DecimalTextInputFormatter(
+                            maxDigitsBeforeDecimal: 3,
+                            maxDigitsAfterDecimal: 2,
+                          ),
+                        ],
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.font20BlackBold.copyWith(
+                          fontSize: 17.sp,
+                          color: AppColors.primary,
+                        ),
                         onChanged: (value) {
-                          setState(() {
-                            individualFare = double.tryParse(value) ?? 0.0;
-                          });
+                          final parsed = double.tryParse(value) ?? 0.0;
+                          if (parsed != individualFare) {
+                            setState(() {
+                              individualFare = parsed;
+                            });
+                          }
                         },
                       ),
                     ),
@@ -118,16 +126,17 @@ class _OtherViewState extends State<OtherView> {
                 verticaalSpacing(16),
                 CustomButton(
                   onPressed: () {
-                    if (farePerPersonController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'من فضلك ادخل أجرة الفرد قبل إضافة راكب',
-                          ),
-                        ),
+                    if (individualFare == 0.0) {
+                      Alerts.failureDialog(
+                        context: context,
+                        title: 'خطأ',
+                        message: 'من فضلك ادخل اجرة الفرد',
                       );
                       return;
                     }
+                    final modalRiderController = TextEditingController();
+                    final modalNumSeatsController = TextEditingController();
+                    final modalAmountPaidController = TextEditingController();
 
                     showModalBottomSheet(
                       context: context,
@@ -166,14 +175,15 @@ class _OtherViewState extends State<OtherView> {
                                 verticaalSpacing(12),
                                 buildLabelAndFieldByVehicleType(
                                   label: 'اسم / رقم الراكب',
-                                  controller: riderNameController,
+                                  controller: modalRiderController,
                                   isNumber: false,
+                                  isOther: true,
                                   vehicleType: VehicleType.other,
                                 ),
                                 verticaalSpacing(12),
                                 buildLabelAndFieldByVehicleType(
                                   label: 'دفع كام فرد',
-                                  controller: numSeatsController,
+                                  controller: modalNumSeatsController,
                                   isNumber: true,
                                   min: 1,
                                   vehicleType: VehicleType.other,
@@ -182,7 +192,7 @@ class _OtherViewState extends State<OtherView> {
                                 verticaalSpacing(12),
                                 buildLabelAndFieldByVehicleType(
                                   label: 'دفع كام',
-                                  controller: amountPaidController,
+                                  controller: modalAmountPaidController,
                                   isNumber: true,
                                   vehicleType: VehicleType.other,
                                 ),
@@ -191,6 +201,42 @@ class _OtherViewState extends State<OtherView> {
                                   child: CustomButton(
                                     backgroundColor: AppColors.white,
                                     onPressed: () {
+                                      final name =
+                                          modalRiderController.text.trim();
+                                      final seats =
+                                          int.tryParse(
+                                            modalNumSeatsController.text.trim(),
+                                          ) ??
+                                          0;
+                                      final amount =
+                                          double.tryParse(
+                                            modalAmountPaidController.text
+                                                .trim(),
+                                          ) ??
+                                          0.0;
+
+                                      if (name.isEmpty ||
+                                          seats == 0 ||
+                                          amount == 0.0) {
+                                        Alerts.failureDialog(
+                                          context: context,
+                                          title: 'خطأ',
+                                          message: 'من فضلك املأ كل البيانات',
+                                        );
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        riders.add(
+                                          RiderModel(
+                                            name: name,
+                                            seatsPaidFor: seats,
+                                            amountPaid: amount,
+                                            farePerPerson: individualFare,
+                                          ),
+                                        );
+                                      });
+
                                       Navigator.pop(context);
                                     },
                                     buttonText: 'إضافة',
@@ -206,6 +252,8 @@ class _OtherViewState extends State<OtherView> {
                   },
                   buttonText: 'إضافة راكب',
                 ),
+                verticaalSpacing(15),
+                if (riders.isNotEmpty) ...[RidersTable(riders: riders)],
               ],
             ),
           ),
