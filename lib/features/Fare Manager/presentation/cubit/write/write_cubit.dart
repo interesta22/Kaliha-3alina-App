@@ -17,7 +17,7 @@ class WriteCubit extends Cubit<WriteState> {
     emit(WriteLoading());
     try {
       // ignore: unused_local_variable
-      List<RideModel> ridesList = _hiveBox.get(HiveConstants.ridesList).cast<RideModel>().toList();
+      List<RideModel> ridesList = _getRidesFromDatabase;
       emit(WriteSuccess(successMessage: 'تم حفظ مشوارك بنجاح'));
     } catch (e) {
       emit(WriteFailed(errorMessage: e.toString()));
@@ -26,7 +26,7 @@ class WriteCubit extends Cubit<WriteState> {
   void deleteRide(int index) {
     emit(WriteLoading());
     try {
-      final List<RideModel> ridesList = _hiveBox.get(HiveConstants.ridesList).cast<RideModel>().toList();
+      final List<RideModel> ridesList = _getRidesFromDatabase; 
       ridesList.removeAt(index);
       _hiveBox.put(HiveConstants.ridesList, ridesList);
       emit(WriteSuccess(successMessage: 'تم حذف المشوار بنجاح'));
@@ -37,7 +37,7 @@ class WriteCubit extends Cubit<WriteState> {
   void updateRide(int index, RideModel updatedRide) {
     emit(WriteLoading());
     try {
-      final List<RideModel> ridesList = _hiveBox.get(HiveConstants.ridesList).cast<RideModel>().toList();
+      final List<RideModel> ridesList = _getRidesFromDatabase;
       ridesList[index] = updatedRide;
       _hiveBox.put(HiveConstants.ridesList, ridesList);
       emit(WriteSuccess(successMessage: 'تم تحديث المشوار بنجاح'));
@@ -54,4 +54,6 @@ class WriteCubit extends Cubit<WriteState> {
       emit(WriteFailed(errorMessage: e.toString()));
     }
   }
+
+  List<RideModel> get _getRidesFromDatabase => _hiveBox.get(HiveConstants.ridesList).cast<RideModel>().toList();
 }
