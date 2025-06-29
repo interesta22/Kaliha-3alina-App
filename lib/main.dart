@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
@@ -7,8 +6,6 @@ import 'package:khaliha_3alina/core/constants/hive_const.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/Fare Manager/data/models/ride_type_adaptor.dart';
 import 'package:khaliha_3alina/features/home/presentation/views/home_view.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +22,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -46,7 +41,7 @@ class _MyAppState extends State<MyApp> {
           title: 'خليها علينا',
           theme: ThemeData(
             scaffoldBackgroundColor: AppColors.background,
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+            colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF49BEB6)),
           ),
           home: child,
         );

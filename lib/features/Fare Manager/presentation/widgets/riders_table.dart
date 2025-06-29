@@ -21,7 +21,7 @@ class RidersTable extends StatelessWidget {
         ),
         child: Table(
           columnWidths: const {
-            0: FlexColumnWidth(2.5),
+            0: FlexColumnWidth(3),
             1: FlexColumnWidth(3),
             2: FlexColumnWidth(3),
             3: FlexColumnWidth(3),
@@ -44,7 +44,7 @@ class RidersTable extends StatelessWidget {
                 headerCell('دفع لكام واحد'),
                 headerCell('اجرته (جم)'),
                 headerCell('دفع كام (جم)'),
-                headerCell('فرق (الباقي)'),
+                headerCell('الباقي (جم)'),
               ],
             ),
             ...riders.map((rider) {

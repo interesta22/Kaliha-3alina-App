@@ -4,7 +4,6 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:khaliha_3alina/features/home/presentation/widgets/build_drawer.dart';
 import 'package:khaliha_3alina/features/home/presentation/widgets/build_main_screen.dart';
 
-
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -15,15 +14,11 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final ZoomDrawerController _drawerController = ZoomDrawerController();
 
-  
-
-  
-
   @override
   Widget build(BuildContext context) {
     return ZoomDrawer(
       controller: _drawerController,
-      menuScreen: buildDrawerContent(),
+      menuScreen: buildDrawerContent(context),
       mainScreen: buildMainScreen(_drawerController),
       borderRadius: 24.0,
       isRtl: true,
@@ -31,7 +26,7 @@ class _HomeViewState extends State<HomeView> {
       mainScreenScale: 0.1,
       angle: 25,
       slideWidth: MediaQuery.of(context).size.width * 0.65,
-      menuBackgroundColor: AppColors.secondary,
+      menuBackgroundColor: Color(0xFF49BEB6),
       openCurve: Curves.easeIn,
       closeCurve: Curves.easeOut,
       menuScreenTapClose: true,
@@ -40,7 +35,4 @@ class _HomeViewState extends State<HomeView> {
       style: DrawerStyle.style2, // اختيار الشكل المناسب
     );
   }
-
-  
-
 }
