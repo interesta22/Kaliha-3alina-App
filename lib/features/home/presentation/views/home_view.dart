@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:khaliha_3alina/features/home/presentation/widgets/build_drawer.dart';
 import 'package:khaliha_3alina/features/home/presentation/widgets/build_main_screen.dart';

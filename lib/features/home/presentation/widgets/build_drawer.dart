@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
 import 'package:khaliha_3alina/features/home/presentation/views/about_view.dart';
 import 'package:khaliha_3alina/features/home/presentation/views/contact_us_view.dart';

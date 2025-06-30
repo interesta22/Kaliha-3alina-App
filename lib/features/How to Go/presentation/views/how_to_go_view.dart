@@ -1,66 +1,135 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:khaliha_3alina/shared/spacing.dart';
+import 'package:khaliha_3alina/core/theme/colors.dart';
+import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/data/models/route_model.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/result_card.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/data/controller/how_to_go_controller.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/modern_dropdown.dart';
+// how_to_go_view.dart
 
 class HowToGoView extends StatefulWidget {
+  const HowToGoView({super.key});
+
   @override
-  _MwasalatChatState createState() => _MwasalatChatState();
+  State<HowToGoView> createState() => _HowToGoViewState();
 }
 
-class _MwasalatChatState extends State<HowToGoView> {
-  final TextEditingController _controller = TextEditingController();
-  String response = '';
+class _HowToGoViewState extends State<HowToGoView> {
+  final controller = HowToGoController();
+  bool showResult = false;
 
-  Future<void> askQuestion(String question) async {
-    final url = Uri.parse('http://<YOUR_IP>:5000/ask'); // غير <YOUR_IP>
+  @override
+  void initState() {
+    super.initState();
+    controller.init(context, setState);
+  }
 
-    try {
-      final res = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"question": question}),
-      );
-
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        setState(() {
-          response = data['answer'];
-        });
-      } else {
-        setState(() {
-          response = "حصل خطأ من السيرفر.";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        response = "مش قادر أوصل للسيرفر. تأكد إن السيرفر شغال.";
-      });
-    }
+  void _handleSearch() {
+    controller.search();
+    setState(() {
+      showResult = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('مواصلات مصر')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        foregroundColor: AppColors.background,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
+        backgroundColor: AppColors.primary,
+        title: Text('إزاي أروح؟ 🚍 ', style: AppTextStyles.font20BlackBold),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(labelText: 'اسأل منين لفين'),
+            modernDropdown(
+              'المحافظة',
+              controller.selectedGovernorate,
+              controller.governorates,
+              controller.onGovernorateChanged,
             ),
-            ElevatedButton(
-              onPressed: () {
-                askQuestion(_controller.text);
-              },
-              child: Text('اسأل'),
+            verticaalSpacing(15),
+            modernDropdown(
+              'من',
+              controller.from,
+              controller.locations,
+              controller.onFromChanged,
             ),
-            SizedBox(height: 20),
-            Text(
-              response,
-              style: TextStyle(fontSize: 18),
+            verticaalSpacing(15),
+            modernDropdown(
+              'إلى',
+              controller.to,
+              controller.locations,
+              controller.onToChanged,
             ),
+            verticaalSpacing(30),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _handleSearch,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'اعرف الطريق',
+                      style: AppTextStyles.font17WhiteMedium.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                horizentalSpacing(10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                    fixedSize: const Size(55, 55),
+                    backgroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.refresh_rounded,
+                    color: AppColors.primary,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    controller.reset();
+                    setState(() {
+                      showResult = false;
+                    });
+                  },
+                ),
+              ],
+            ),
+            verticaalSpacing(30),
+            if (showResult) ...[
+              if (controller.result != null &&
+                  controller.result is RouteModel &&
+                  controller.result!.isNotEmpty)
+                resultCard(controller.result!)
+              else if (controller.result != null &&
+                  controller.result is List<RouteModel> &&
+                  (controller.result as List<RouteModel>).isNotEmpty)
+                multiStepResultCard(controller.result as List<RouteModel>)
+              else if (controller.from != null && controller.to != null)
+                failureResultCard(controller.from!, controller.to!),
+            ],
           ],
         ),
       ),
