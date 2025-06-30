@@ -21,7 +21,7 @@ Widget buildMainScreen(final controller) {
       'type': 'tonaya',
     },
     {
-      'title': 'أخري',
+      'title': 'وسائل أخرى',
       'icon': 'lib/core/assets/images/19733-removebg-preview.png',
       'type': 'other',
     },
@@ -69,9 +69,13 @@ Widget buildMainScreen(final controller) {
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0.h),
                         child: InkWell(
-                          onTap: () => Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (context) => HowToGoView())),
+                          onTap:
+                              () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HowToGoView(),
+                                ),
+                              ),
                           borderRadius: BorderRadius.circular(20.r),
                           child: Text(
                             'لسه مش عارف تروح المكان ازاي؟',

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/data/models/route_model.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/result_card.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/how_to_go_form.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/data/controller/how_to_go_controller.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/modern_dropdown.dart';
-// how_to_go_view.dart
+import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/how_to_go_result_section.dart';
 
+
+// how_to_go_view.dart
 class HowToGoView extends StatefulWidget {
   const HowToGoView({super.key});
 
@@ -27,9 +27,7 @@ class _HowToGoViewState extends State<HowToGoView> {
 
   void _handleSearch() {
     controller.search();
-    setState(() {
-      showResult = true;
-    });
+    setState(() => showResult = true);
   }
 
   @override
@@ -37,102 +35,38 @@ class _HowToGoViewState extends State<HowToGoView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        foregroundColor: AppColors.background,
+        scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
         ),
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.background,
         title: Text('إزاي أروح؟ 🚍 ', style: AppTextStyles.font20BlackBold),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            modernDropdown(
-              'المحافظة',
-              controller.selectedGovernorate,
-              controller.governorates,
-              controller.onGovernorateChanged,
-            ),
-            verticaalSpacing(15),
-            modernDropdown(
-              'من',
-              controller.from,
-              controller.locations,
-              controller.onFromChanged,
-            ),
-            verticaalSpacing(15),
-            modernDropdown(
-              'إلى',
-              controller.to,
-              controller.locations,
-              controller.onToChanged,
+            HowToGoForm(
+              controller: controller,
+              onSearchPressed: _handleSearch,
+              onResetPressed: () {
+                controller.reset();
+                setState(() => showResult = false);
+              },
             ),
             verticaalSpacing(30),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _handleSearch,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      'اعرف الطريق',
-                      style: AppTextStyles.font17WhiteMedium.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                horizentalSpacing(10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
-                    fixedSize: const Size(55, 55),
-                    backgroundColor: AppColors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.refresh_rounded,
-                    color: AppColors.primary,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    controller.reset();
-                    setState(() {
-                      showResult = false;
-                    });
-                  },
-                ),
-              ],
-            ),
-            verticaalSpacing(30),
-            if (showResult) ...[
-              if (controller.result != null &&
-                  controller.result is RouteModel &&
-                  controller.result!.isNotEmpty)
-                resultCard(controller.result!)
-              else if (controller.result != null &&
-                  controller.result is List<RouteModel> &&
-                  (controller.result as List<RouteModel>).isNotEmpty)
-                multiStepResultCard(controller.result as List<RouteModel>)
-              else if (controller.from != null && controller.to != null)
-                failureResultCard(controller.from!, controller.to!),
-            ],
+            if (showResult)
+              HowToGoResultSection(
+                controller: controller,
+              ),
           ],
         ),
       ),
     );
   }
 }
+
+
+

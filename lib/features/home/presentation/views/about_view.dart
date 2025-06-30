@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:khaliha_3alina/features/home/presentation/widgets/about_content.dart';
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
@@ -19,11 +21,11 @@ class AboutView extends StatelessWidget {
         backgroundColor: AppColors.background,
         title: Text('عن التطبيق', style: AppTextStyles.font20BlackBold),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(right: 25.w, left: 17.w, top: 20.h),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
                 child: Image.asset(
@@ -31,33 +33,10 @@ class AboutView extends StatelessWidget {
                   height: 100,
                 ),
               ),
-              const SizedBox(height: 30),
-              Text(
-                'تطبيق خليها علينا',
-                style: AppTextStyles.font20BlackBold.copyWith(
-                  fontSize: 24,
-                  color: Color(0xff2DAA9E),
-                ),
-              ),
+              verticaalSpacing(20),
+              AboutTitle(),
               verticaalSpacing(15),
-              Text(
-                '''تطبيق "خليها علينا" هو أداة ذكية تساعدك في حساب وتوزيع أجرة المواصلات بطريقة سهلة وسريعة، سواء كنت راكب أو سواق.
-          
-          مناسب لجميع وسائل النقل الجماعي زي:
-          • الميكروباص  
-          • التوناية  
-          • أو أي وسيلة مواصلات تانية
-          
-          مميزات التطبيق:
-          • تحدد الأجرة الفردية  
-          • تضيف عدد الركاب  
-          • تسجّل المدفوع من كل راكب  
-          • التطبيق يحسبلك تلقائيًا مين دفع كام  
-          
-"خليها علينا" بيخلي الحسابات أوضح وأبسط، ويريّحك من الجدال!
-          ''',
-                style: AppTextStyles.font17BlackMedium,
-              ),
+              AboutContent(),
             ],
           ),
         ),
@@ -65,3 +44,19 @@ class AboutView extends StatelessWidget {
     );
   }
 }
+
+class AboutTitle extends StatelessWidget {
+  const AboutTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'تطبيق خليها علينا',
+      style: AppTextStyles.font20BlackBold.copyWith(
+        fontSize: 24,
+        color: Color(0xff2DAA9E),
+      ),
+    );
+  }
+}
+

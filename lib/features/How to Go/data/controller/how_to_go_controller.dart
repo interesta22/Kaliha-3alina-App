@@ -21,11 +21,11 @@ class HowToGoController {
   String? to;
   dynamic result;
 
-  late BuildContext _context;
+
   late void Function(VoidCallback fn) _setState;
 
   void init(BuildContext context, void Function(VoidCallback fn) setState) {
-    _context = context;
+
     _setState = setState;
     _loadRoutes();
   }
