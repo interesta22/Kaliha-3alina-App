@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/data/models/route_model.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/data/repo/how_to_go_controller.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/result_card.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/data/controller/how_to_go_controller.dart';
 
 class HowToGoResultSection extends StatelessWidget {
-  final HowToGoController controller;
+  final HowToGoRepository controller;
 
   const HowToGoResultSection({super.key, required this.controller});
 

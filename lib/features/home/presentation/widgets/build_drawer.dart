@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/logic/read_cubit.dart';
 import 'package:khaliha_3alina/features/home/presentation/views/about_view.dart';
 import 'package:khaliha_3alina/features/home/presentation/views/contact_us_view.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/views/trips_view.dart';
@@ -15,11 +18,11 @@ Widget buildDrawerContent(BuildContext context) {
           DrawerHeader(
             decoration: BoxDecoration(color: Color(0xFF49BEB6)),
             child: Center(
-              child: Image.asset('lib/core/assets/images/Frame 35.png'),
+              child: Image.asset('lib/core/assets/images/Frame 5.png'),
             ),
           ),
           ListTile(
-            leading: Icon(Icons.trip_origin_outlined, color: Colors.white),
+            leading: Icon(FontAwesomeIcons.taxi, color: Colors.white),
             title: Text(
               'رحلاتي السابقة',
               style: AppTextStyles.font17BlackMedium.copyWith(
@@ -29,12 +32,18 @@ Widget buildDrawerContent(BuildContext context) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TripsView()),
+                MaterialPageRoute(
+                  builder:
+                      (context) => BlocProvider(
+                        create: (_) => ReadCubit()..getRides(),
+                        child: TripsView(),
+                      ),
+                ),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.info_outline, color: Colors.white),
+            leading: Icon(FontAwesomeIcons.circleInfo, color: Colors.white),
             title: Text(
               'عن التطبيق',
               style: AppTextStyles.font17BlackMedium.copyWith(
@@ -50,7 +59,7 @@ Widget buildDrawerContent(BuildContext context) {
           ),
 
           ListTile(
-            leading: Icon(Icons.contact_mail, color: Colors.white),
+            leading: Icon(FontAwesomeIcons.message, color: Colors.white),
             title: Text(
               'تواصل معنا',
               style: AppTextStyles.font17BlackMedium.copyWith(
@@ -65,7 +74,7 @@ Widget buildDrawerContent(BuildContext context) {
             },
           ),
           ListTile(
-            leading: Icon(Icons.share, color: Colors.white),
+            leading: Icon(FontAwesomeIcons.share, color: Colors.white),
             title: Text(
               'مشاركة التطبيق',
               style: AppTextStyles.font17BlackMedium.copyWith(

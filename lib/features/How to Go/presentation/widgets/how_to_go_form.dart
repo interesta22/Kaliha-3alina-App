@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/data/repo/how_to_go_controller.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/custom_button.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/data/controller/how_to_go_controller.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/modern_dropdown.dart';
 
 class HowToGoForm extends StatelessWidget {
-  final HowToGoController controller;
+  final HowToGoRepository controller;
   final VoidCallback onSearchPressed;
   final VoidCallback onResetPressed;
 

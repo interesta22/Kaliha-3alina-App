@@ -1,17 +1,23 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
-import 'package:khaliha_3alina/shared/custom_snackbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:khaliha_3alina/shared/custom_snackbar.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/logic/read_cubit.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/logic/write_cubit.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/ride_model.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/data/models/rider_model.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/seats.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/riders_table.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/custom_button.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/usage_tips_section.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/fare_input_section.dart';
-import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/builld_label_and_field.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/presentation/widgets/microbus_show_rider_model.dart';
+
+
 
 class MicrobusView extends StatefulWidget {
   const MicrobusView({super.key});
@@ -31,141 +37,42 @@ class _MicrobusViewState extends State<MicrobusView> {
     super.dispose();
   }
 
-  void _showAddRiderModal() {
-    final modalFareController = TextEditingController(
-      text: individualFare.toStringAsFixed(2),
+  Future<void> _addRider() async {
+    final rider = await showAddRiderModal(context, individualFare);
+    if (rider != null) {
+      setState(() => riders.add(rider));
+    }
+  }
+
+  void _saveRide() {
+    final readCubit = BlocProvider.of<ReadCubit>(context, listen: false);
+    final writeCubit = BlocProvider.of<WriteCubit>(context, listen: false);
+
+    List<RideModel> rides = [];
+    if (readCubit.state is ReadSuccess) {
+      rides = (readCubit.state as ReadSuccess).ridesList;
+    }
+
+    final tripNumber = rides.length + 1;
+    final ride = RideModel(
+      indexAtDB: tripNumber,
+      date: DateFormat('dd/MM/yyyy | hh:mm a').format(DateTime.now()),
+      riders: riders,
+      vehicleType: VehicleType.microbus,
     );
-    final modalRiderController = TextEditingController();
-    final modalNumSeatsController = TextEditingController();
-    final modalAmountPaidController = TextEditingController();
-    String? modalSelectedSeat;
 
-    showModalBottomSheet(
-      backgroundColor: AppColors.primary,
-      isScrollControlled: true,
+    writeCubit.addRide(ride);
+
+    setState(() {
+      riders = [];
+      farePerPersonController.clear();
+      individualFare = 0.0;
+    });
+
+    Alerts.successDialog(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(
-                      child: Text(
-                        'إضافة راكب',
-                        style: AppTextStyles.font20BlackBold.copyWith(
-                          fontSize: 23.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    verticaalSpacing(16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Seats(
-                          vehicleType: VehicleType.microbus,
-                          onSeatToggle: (index) {
-                            if (modalSelectedSeat != index.toString()) {
-                              setModalState(() {
-                                modalSelectedSeat = index.toString();
-                                modalRiderController.text = modalSelectedSeat!;
-                              });
-                            }
-                          },
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              buildLabelAndFieldByVehicleType(
-                                label: 'اجرة الفرد',
-                                controller: modalFareController,
-                                vehicleType: VehicleType.microbus,
-                                isNumber: true,
-                                isDisabled: true,
-                              ),
-                              verticaalSpacing(12),
-                              buildLabelAndFieldByVehicleType(
-                                label: 'اسم / رقم الراكب',
-                                controller: modalRiderController,
-                                vehicleType: VehicleType.microbus,
-                                isRider: true,
-                                isDisabled: true,
-                              ),
-                              verticaalSpacing(12),
-                              buildLabelAndFieldByVehicleType(
-                                label: 'دفع كام فرد',
-                                controller: modalNumSeatsController,
-                                vehicleType: VehicleType.microbus,
-                                isNumber: true,
-                                isNumofSeats: true,
-                              ),
-                              verticaalSpacing(12),
-                              buildLabelAndFieldByVehicleType(
-                                label: 'دفع كام',
-                                controller: modalAmountPaidController,
-                                vehicleType: VehicleType.microbus,
-                                isNumber: true,
-                              ),
-                              verticaalSpacing(16),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    CustomButton(
-                      backgroundColor: AppColors.white,
-                      buttonText: 'إضافة',
-                      onPressed: () {
-                        final name = modalRiderController.text.trim();
-                        final seats =
-                            int.tryParse(modalNumSeatsController.text.trim()) ??
-                            0;
-                        final amount =
-                            double.tryParse(
-                              modalAmountPaidController.text.trim(),
-                            ) ??
-                            0.0;
-
-                        if (name.isEmpty || seats == 0 || amount == 0.0) {
-                          Alerts.failureDialog(
-                            context: context,
-                            title: 'خطأ',
-                            message: 'من فضلك املأ كل البيانات',
-                          );
-                          return;
-                        }
-
-                        setState(() {
-                          riders.add(
-                            RiderModel(
-                              name: name,
-                              seatsPaidFor: seats,
-                              amountPaid: amount,
-                              farePerPerson: individualFare,
-                            ),
-                          );
-                        });
-
-                        Navigator.pop(context);
-                      },
-                    ),
-                    verticaalSpacing(16),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      title: 'تم الحفظ',
+      message: 'تم حفظ الرحلة بنجاح',
     );
   }
 
@@ -207,26 +114,39 @@ class _MicrobusViewState extends State<MicrobusView> {
                     onChanged: (value) {
                       final parsed = double.tryParse(value) ?? 0.0;
                       if (parsed != individualFare) {
-                        setState(() {
-                          individualFare = parsed;
-                        });
+                        setState(() => individualFare = parsed);
                       }
                     },
                   ),
                   verticaalSpacing(24),
-                  CustomButton(
-                    buttonText: 'ضيف راكب',
-                    onPressed: () {
-                      if (individualFare == 0.0) {
-                        Alerts.failureDialog(
-                          context: context,
-                          title: 'خطأ',
-                          message: 'من فضلك ادخل اجرة الفرد',
-                        );
-                        return;
-                      }
-                      _showAddRiderModal();
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          buttonText: 'ضيف راكب',
+                          onPressed: () {
+                            if (individualFare == 0.0) {
+                              Alerts.failureDialog(
+                                context: context,
+                                title: 'خطأ',
+                                message: 'من فضلك ادخل اجرة الفرد',
+                              );
+                              return;
+                            }
+                            _addRider();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.save,
+                          color: AppColors.primary,
+                          size: 32,
+                        ),
+                        onPressed: riders.isEmpty ? null : _saveRide,
+                      ),
+                    ],
                   ),
                   verticaalSpacing(15),
                   if (riders.isNotEmpty) RidersTable(riders: riders),

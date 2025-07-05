@@ -10,6 +10,8 @@ final class ReadSuccess extends ReadState {
 
   ReadSuccess({required this.ridesList});
 }
+final class ReadEmpty extends ReadState {} // << أضفها مع الباقي
+
 final class ReadFailed extends ReadState {
   final String errorMessage;
 

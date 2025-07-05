@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:khaliha_3alina/shared/spacing.dart';
 import 'package:khaliha_3alina/core/theme/colors.dart';
 import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:khaliha_3alina/features/How%20to%20Go/data/repo/how_to_go_controller.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/how_to_go_form.dart';
-import 'package:khaliha_3alina/features/How%20to%20Go/data/controller/how_to_go_controller.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/presentation/widgets/how_to_go_result_section.dart';
 
 
@@ -16,7 +16,7 @@ class HowToGoView extends StatefulWidget {
 }
 
 class _HowToGoViewState extends State<HowToGoView> {
-  final controller = HowToGoController();
+  final controller = HowToGoRepository();
   bool showResult = false;
 
   @override

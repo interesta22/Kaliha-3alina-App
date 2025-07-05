@@ -1,11 +1,20 @@
+import 'package:hive/hive.dart';
+
+part '../repo/rider_model.g.dart';
+
+@HiveType(typeId: 1)
 class RiderModel {
+  @HiveField(0)
+  String name;
 
-  String name; 
-  double farePerPerson; 
+  @HiveField(1)
+  double farePerPerson;
+
+  @HiveField(2)
   int seatsPaidFor;
-  double amountPaid;  
 
-
+  @HiveField(3)
+  double amountPaid;
 
   RiderModel({
     required this.name,
@@ -13,8 +22,11 @@ class RiderModel {
     required this.seatsPaidFor,
     required this.amountPaid,
   });
+
   double get totalFare => seatsPaidFor * farePerPerson;
+
   double get difference => amountPaid - totalFare;
+
   String get formattedTotalFare => totalFare.toStringAsFixed(2);
   String get formattedDifference => difference.toStringAsFixed(2);
   String get formattedAmountPaid => amountPaid.toStringAsFixed(2);

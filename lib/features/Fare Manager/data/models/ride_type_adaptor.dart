@@ -1,10 +1,9 @@
-import 'rider_model.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/enum.dart';
 import 'package:khaliha_3alina/features/Fare%20Manager/data/models/ride_model.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/data/models/rider_model.dart';
 
-
-class RideTypeAdaptor extends TypeAdapter<RideModel> {
-
+class RideTypeAdapter extends TypeAdapter<RideModel> {
   @override
   final int typeId = 0;
 
@@ -12,26 +11,28 @@ class RideTypeAdaptor extends TypeAdapter<RideModel> {
   RideModel read(BinaryReader reader) {
     return RideModel(
       indexAtDB: reader.readInt(),
-      riders: reader.readList() as List<RiderModel>,
       date: reader.readString(),
-      vehicleType: reader.read(),
+      vehicleType: VehicleType.values.firstWhere(
+        (e) => e.name == reader.readString(),
+      ),
+      riders: (reader.readList()).cast<RiderModel>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, RideModel obj) {
     writer.writeInt(obj.indexAtDB);
-    writer.writeList(obj.riders);
     writer.writeString(obj.date);
-    writer.writeString(obj.vehicleType.toString());
+    writer.writeString(obj.vehicleType.name);
+    writer.writeList(obj.riders);
   }
 
   RideModel decrementIndexAtDB(RideModel obj) {
     return RideModel(
       indexAtDB: obj.indexAtDB - 1,
-      riders: obj.riders,
       date: obj.date,
       vehicleType: obj.vehicleType,
+      riders: obj.riders,
     );
   }
 }

@@ -1,46 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:khaliha_3alina/core/theme/colors.dart';
+import 'package:khaliha_3alina/core/theme/text_style.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:khaliha_3alina/features/Fare%20Manager/logic/read_cubit.dart';
 
-class TripFilterChips extends StatefulWidget {
-  final Function(String) onFilterSelected;
+class TripFilterChips extends StatelessWidget {
+  final VehicleFilter selectedFilter;
+  final Function(VehicleFilter) onFilterSelected;
 
-  const TripFilterChips({super.key, required this.onFilterSelected});
-
-  @override
-  State<TripFilterChips> createState() => _TripFilterChipsState();
-}
-
-class _TripFilterChipsState extends State<TripFilterChips> {
-  final List<String> filters = ['الكل', 'مشروع', 'توناية', 'أخرى'];
-  String selected = 'الكل';
+  const TripFilterChips({
+    super.key,
+    required this.selectedFilter,
+    required this.onFilterSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
+    final filters = {
+      VehicleFilter.all: 'الكل',
+      VehicleFilter.microbusOnly: 'مشروع',
+      VehicleFilter.suzukiOnly: 'توناية',
+      VehicleFilter.otherOnly: 'أخرى',
+    };
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children:
-          filters.map((filter) {
-            final bool isSelected = selected == filter;
-            return ChoiceChip(
-              showCheckmark: false,
-              label: Text(
-                filter,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : const Color(0xff2DAA9E),
-                  fontWeight: FontWeight.bold,
+          filters.entries.map((entry) {
+            final isSelected = entry.key == selectedFilter;
+            return GestureDetector(
+              onTap: () => onFilterSelected(entry.key),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : AppColors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.primary),
                 ),
-              ),
-              selected: isSelected,
-              onSelected: (_) {
-                setState(() {
-                  selected = filter;
-                });
-                widget.onFilterSelected(filter);
-              },
-              backgroundColor: Colors.white,
-              selectedColor: const Color(0xff2DAA9E),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-                side: const BorderSide(color: Color(0xff2DAA9E)),
+                child: Text(
+                  entry.value,
+                  style: AppTextStyles.font17BlackMedium.copyWith(
+                    fontSize: 16.sp,
+                    color: isSelected ? Colors.white : AppColors.primary,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
               ),
             );
           }).toList(),

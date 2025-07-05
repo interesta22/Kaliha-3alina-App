@@ -13,8 +13,6 @@ class CarCard extends StatelessWidget {
   }
 
   Route _createRoute(String type) {
-    const beginLeft = Offset(-1.0, 0.0);
-    const beginBottom = Offset(0.0, 1.0);
     const beginFade = Offset(0.0, 0.0);
     const end = Offset.zero;
     const curve = Curves.easeInOut;
@@ -22,16 +20,16 @@ class CarCard extends StatelessWidget {
     Offset begin;
     switch (type) {
       case 'project':
-        begin = beginLeft;
+        begin = beginFade;
         break;
       case 'tonaya':
-        begin = beginBottom;
+        begin = beginFade;
         break;
       case 'other':
         begin = beginFade;
         break;
       default:
-        begin = beginLeft;
+        begin = beginFade;
     }
 
     return PageRouteBuilder(

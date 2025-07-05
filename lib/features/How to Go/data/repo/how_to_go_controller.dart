@@ -7,7 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:khaliha_3alina/features/How%20to%20Go/data/models/route_model.dart';
 // how_to_go_controller.dart
 
-class HowToGoController {
+class HowToGoRepository {
   final FlutterTts _tts = FlutterTts();
   final List<RouteModel> _allRoutes = [];
 
